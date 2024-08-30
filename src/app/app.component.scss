@@ -1,0 +1,33 @@
+.theme-switch-container {
+  display: flex;
+  justify-content: end;
+  padding: 10px;
+}
+
+.container-grid {
+  display: grid;
+  gap: 25px;
+  justify-items: center;
+  align-items: center;
+  margin: 25px 50px;
+}
+
+.container-grid.grid-1-col {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.container-grid.grid-2-col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .container-grid.grid-2-col {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container-grid {
+    margin: 25px;
+  }
+}

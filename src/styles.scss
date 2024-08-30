@@ -1,0 +1,51 @@
+/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+body.light-theme {
+    --background-color: #9ca3af;
+    --stroke-color: #d1d5db4d;
+
+    /* face-recognition-camera.component */
+    --color-camera: #334155;
+    --color-camera-l: #496080;
+    --color-camera-d: #1f2532;
+}
+
+body.dark-theme {
+    --background-color: #27272a;
+    --stroke-color: #71717a4d;
+
+    /* face-recognition-camera.component */
+    --color-camera: #94a3b8;
+    --color-camera-l: #c6d2db;
+    --color-camera-d: #6f7a93;
+}
+
+body {
+    //--extra-1: #114ca0;
+    //--extra-2: #610845;
+
+    --background-color: #27272a;
+    background-color: var(--background-color);
+    background-image: linear-gradient(0deg, transparent 24%, var(--stroke-color) 25%, var(--stroke-color) 26%, transparent 27%,transparent 74%, var(--stroke-color) 75%, var(--stroke-color) 76%, transparent 77%,transparent),
+        linear-gradient(90deg, transparent 24%, var(--stroke-color) 25%, var(--stroke-color) 26%, transparent 27%,transparent 74%, var(--stroke-color) 75%, var(--stroke-color) 76%, transparent 77%,transparent);
+    background-size: 55px 55px;
+
+    animation: move 10s linear infinite;
+}
+
+@keyframes move {
+    0% {
+      background-position: 0 0;
+    }
+
+    100% {
+        background-position: 55px 55px;
+    }
+}

@@ -1,0 +1,20 @@
+<div class="theme-switch-container">
+  <app-theme-switch></app-theme-switch>
+</div>
+
+<!--
+<div class="container-grid grid-1-col">
+  <app-face-recognition-camera></app-face-recognition-camera>
+</div>
+-->
+
+<button (click)="addCamera()">Agregar camara</button>
+<select (change)="onSelect($event)">
+  <option value="Entrada">Entrada</option>
+  <option value="Salida">Salida</option>
+</select>
+
+
+<div class="container-grid grid-2-col">
+  <app-face-recognition-camera *ngFor="let camera of cameras" id="{{camera.id}}" [cameraParams]="camera" (deleteCameraEvent)="deleteCamera($event)"></app-face-recognition-camera>
+</div>
