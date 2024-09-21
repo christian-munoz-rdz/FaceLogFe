@@ -1,10 +1,129 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+/* Order */
+@layer reset, primeng;
+
+/* Reset CSS */
+@layer reset {
+    .p-button,
+    .p-float-label input,
+    .p-dropdown {
+        //box-shadow: none;
+    }
+
+    .p-button,
+    .p-float-label input,
+    .p-dropdown,
+    .p-dropdown-panel,
+    .p-dropdown-item,
+    .p-skeleton {
+        border-radius: var(--border-radius-m);
+    }
+
+    .p-dropdown-panel {
+        overflow: hidden;
+    }
+
+    .p-button-rounded {
+        border-radius: 50%;
+    }
+
+    .p-button {
+        background-color: #0257a2;
+        border-color: #0257a2;
+    }
+    
+    .p-button:hover {
+        background-color: #06477f;
+        border-color: #06477f;
+    }
+    
+    .p-button:active {
+        background-color: #0b3f6f;
+        border-color: #0b3f6f;
+    }
+    
+    .p-button-secondary {
+        background-color: #ffffff;
+        border: 2px solid #016dc8;
+        color: #016dc8;
+    }
+    
+    .p-button-secondary:hover {
+        background-color: #ffffff;
+        border: 2px solid #0257a2;
+        color: #0257a2;
+    }
+    
+    .p-button-secondary:active {
+        background-color: #ffffff;
+        border: 2px solid #06477f;
+        color: #06477f;
+    }
+    
+    .p-button-success {
+        background-color: #067f6f;
+        border-color: #067f6f;
+    }
+    
+    .p-button-success:hover {
+        background-color: #0a655a;
+        border-color: #0a655a;
+    }
+    
+    .p-button-success:active {
+        background-color: #0e534b;
+        border-color: #0e534b;
+    }
+    
+    .p-button-danger {
+        background-color: #c01529;
+        border-color: #c01529;
+    }
+    
+    .p-button-danger:hover {
+        background-color: #9f1525;
+        border-color: #9f1525;
+    }
+    
+    .p-button-danger:active {
+        background-color: #841825;
+        border-color: #841825;
+    }
+
+    .p-button-warning {
+        background-color: #a05c08;
+        border-color: #a05c08;
+    }
+    
+    .p-button-warning:hover {
+        background-color: #84480f;
+        border-color: #84480f;
+    }
+    
+    .p-button-warning:active {
+        background-color: #703b13;
+        border-color: #703b13;
+    }
+
+    .p-skeleton {
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .p-skeleton::after {
+        background: linear-gradient( 90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+    }
+}
+
 * {
-    margin: 0px;
-    padding: 0px;
+    --border-radius-sm: 11px;
+    --border-radius-m: 15px;
+    --border-radius-l: 30px;
+    
     box-sizing: border-box;
     transition: all 0.25s ease;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 body.light-theme {
@@ -12,9 +131,14 @@ body.light-theme {
     --stroke-color: #d1d5db4d;
 
     /* face-recognition-camera.component */
-    --color-camera: #334155;
-    --color-camera-l: #496080;
-    --color-camera-d: #1f2532;
+    //--color-camera: #334155;
+    //--color-camera-l: #496080;
+    //--color-camera-d: #1f2532;
+    --color-camera: #5d779a;
+    --color-camera-l: #abbace;
+    --color-camera-d: #3c4d68;
+
+    --font-color: #27272a;
 }
 
 body.dark-theme {
@@ -22,12 +146,20 @@ body.dark-theme {
     --stroke-color: #71717a4d;
 
     /* face-recognition-camera.component */
-    --color-camera: #94a3b8;
-    --color-camera-l: #c6d2db;
-    --color-camera-d: #6f7a93;
+    //--color-camera: #94a3b8;
+    //--color-camera-l: #c6d2db;
+    //--color-camera-d: #6f7a93;
+    --color-camera: #3c4d68;
+    --color-camera-l: #5d779a;
+    --color-camera-d: #2f3a4b;
+
+    --font-color: #9ca3af;
 }
 
 body {
+
+    padding: 0px;
+    margin: 0px;
     //--extra-1: #114ca0;
     //--extra-2: #610845;
 
@@ -48,4 +180,22 @@ body {
     100% {
         background-position: 55px 55px;
     }
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.align-center {
+    align-items: center;
 }

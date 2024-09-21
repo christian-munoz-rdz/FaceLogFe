@@ -1,29 +1,33 @@
-<div class="main-container camera-entry" [class]="detectionColor" [ngClass]="{'color-waiting': isWaiting(), 'camera-exit': hideCamera}">
+<div
+  class="main-container camera-show-anim"
+  [class]="detectionColorStyle"
+  [ngClass]="{ 'color-waiting': isWaiting(), 'camera-hide-anim': cameraHideAnim }"
+>
   <div class="video-container">
     <video
-    #videoElement
-    class="video-element"
-    (loadedmetadata)="loadedMetaData()"
-    (play)="playListener()"
-    [srcObject]="stream"
-    (click)="mostrarControles()"
+      #videoElement
+      class="video-element"
+      (loadedmetadata)="loadedMetaData()"
+      (play)="playListener()"
+      [srcObject]="stream"
+      (click)="mostrarControles()"
     ></video>
-  
+
     <div
-    *ngIf="haveDetection"
-    class="banner-container"
-    [ngClass]="{'banner-show': showBanner, 'banner-hide': hideBanner}"
+      *ngIf="showBanner"
+      class="banner-container banner-show-anim"
+      [ngClass]="{ 'banner-hide-anim': bannerHideAnim }"
     >
       <canvas
-      #canvasBanner
-      class="banner-canvas"
-      width="50"
-      height="50"
+        #canvasBanner
+        class="banner-canvas"
+        width="50"
+        height="50"
       ></canvas>
-      <div class="banner-text" *ngIf="haveDetection || !haveDetection">Rostro detectado</div>
+      <div class="banner-text">{{ bannerText }}</div>
     </div>
-  
-    <div class="waiting-container" *ngIf="!isVideoPlaying || faceRecognitionService.isFaceRecognitionServiceStarted() && !faceRecognitionService.isRecognitionLoaded || haveDetection">
+
+    <div class="waiting-container" *ngIf="isWaiting()">
       <app-waiting></app-waiting>
     </div>
   </div>
@@ -32,11 +36,18 @@
     <div class="sub-container-border-invert"></div>
 
     <div class="onOff-button-container">
-      <app-on-off-switch [checkedValue]="faceRecognitionService.isFaceRecognitionServiceStarted()" (change)="onStartStopService($event)"></app-on-off-switch>
+      <app-on-off-switch
+        [checkedValue]="
+          faceRecognitionService.isFaceRecognitionServiceStarted()
+        "
+        (change)="onStartStopService($event)"
+      ></app-on-off-switch>
     </div>
 
     <select id="video-devices" (change)="onSelect($event)">
-      <option *ngFor="let device of videoDevices" [value]="device.deviceId">{{ device.label || 'Camara sin nombre' }}</option>
+      <option *ngFor="let device of videoDevices" [value]="device.deviceId">
+        {{ device.label || "Camara sin nombre" }}
+      </option>
     </select>
     <div class="delete-button-container">
       <app-delete-button (click)="deleteCamera()"></app-delete-button>
@@ -44,18 +55,26 @@
   </div>
 </div>
 
-<div *ngIf="controles" style="margin-top: 20px;">
-  <input type="checkbox" [checked]="faceRecognitionService.isFaceRecognitionServiceStarted()" (change)="onStartStopService($event)">
+<div *ngIf="controles" style="margin-top: 20px">
+  <input
+    type="checkbox"
+    [checked]="faceRecognitionService.isFaceRecognitionServiceStarted()"
+    (change)="onStartStopService($event)"
+  />
   <div>
-    <button (click)="startStream()">Iniciar stream</button>
-    <button (click)="stopStream()">Detener stream</button>
+    <p-button severity="secondary" (click)="startStream()"
+      >Iniciar stream</p-button
+    >
+    <p-button severity="secondary" (click)="stopStream()"
+      >Detener stream</p-button
+    >
   </div>
   <div>
-    <button (click)="identificarManual()">Identificar</button>
-    <button (click)="deteccionOkFail()"> Deteccion OK/FAIL</button>
-  </div>
-  <div>
-    <button (click)="ocultarBanner()">Ocultar banner</button>
-    <button (click)="mostrarBanner()">Mostrar banner</button>
+    <p-button severity="secondary" (click)="ocultarBanner()"
+      >Ocultar banner</p-button
+    >
+    <p-button severity="secondary" (click)="mostrarBanner()"
+      >Mostrar banner</p-button
+    >
   </div>
 </div>

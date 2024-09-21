@@ -4,17 +4,37 @@
 
 <!--
 <div class="container-grid grid-1-col">
-  <app-face-recognition-camera></app-face-recognition-camera>
+  <app-face-recognition-camera [cameraParams]="{id: 'cam999', type: 'ENTER'}"></app-face-recognition-camera>
 </div>
 -->
 
-<button (click)="addCamera()">Agregar camara</button>
-<select (change)="onSelect($event)">
-  <option value="Entrada">Entrada</option>
-  <option value="Salida">Salida</option>
-</select>
+<div style="margin: 10px">
+  <p-button label="Agregar camara" (click)="addCamera()" icon="pi pi-camera" />
+</div>
 
+<div style="margin: 10px">
+  <p-dropdown
+    [options]="[
+      { type: 'ENTER', name: 'Entrada' },
+      { type: 'EXIT', name: 'Salida' }
+    ]"
+    [(ngModel)]="cameraType"
+    optionLabel="name"
+    placeholder="Selecciona un tipo"
+  />
+</div>
 
 <div class="container-grid grid-2-col">
-  <app-face-recognition-camera *ngFor="let camera of cameras" id="{{camera.id}}" [cameraParams]="camera" (deleteCameraEvent)="deleteCamera($event)"></app-face-recognition-camera>
+  <app-face-recognition-camera
+    *ngFor="let camera of cameras"
+    id="{{ camera.id }}"
+    [cameraParams]="camera"
+    (deleteCameraEvent)="deleteCamera($event)"
+  ></app-face-recognition-camera>
 </div>
+
+<!--
+<div class="create-user-container">
+  <app-create-user></app-create-user>
+</div>
+-->

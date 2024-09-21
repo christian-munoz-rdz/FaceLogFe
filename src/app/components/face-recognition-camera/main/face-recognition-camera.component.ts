@@ -1,58 +1,90 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { take } from 'rxjs';
+import { UserLogTimePayloadModel } from '../../../core/models/user/user.model';
 import { FaceRecognitionService } from '../../../services/face-recognition/face-recognition.service';
-import { WaitingComponent } from '../components/waiting/waiting.component';
+import { UserService } from '../../../services/user/user.service';
 import { DeleteButtonComponent } from '../components/delete-button/delete-button.component';
 import { OnOffSwitchComponent } from '../components/on-off-switch/on-off-switch.component';
+import { WaitingComponent } from '../components/waiting/waiting.component';
 
 @Component({
   selector: 'app-face-recognition-camera',
   standalone: true,
-  imports: [CommonModule, WaitingComponent, DeleteButtonComponent, OnOffSwitchComponent],
+  imports: [
+    CommonModule,
+    WaitingComponent,
+    DeleteButtonComponent,
+    OnOffSwitchComponent,
+    ButtonModule,
+  ],
   templateUrl: './face-recognition-camera.component.html',
   styleUrl: './face-recognition-camera.component.scss',
-  providers: [FaceRecognitionService]
+  providers: [FaceRecognitionService],
 })
-export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @ViewChild('videoElement') videoElement!: ElementRef;
-  videoDevices: MediaDeviceInfo[] = [];
-  selectedDeviceId: string = ''
-  stream: MediaStream | null = null;
-  isVideoPlaying: boolean = false;
-
-  rgbaImageData: number[][] = []
-  haveDetection: boolean = false;
-
-  @ViewChild('canvasBanner') canvasBanner!: ElementRef;
-  showBanner: boolean = false;
-  hideBanner: boolean = false;
-  hideCamera: boolean = false;
-  detectionColor: string = '';
-  detectionOk: boolean = true;
+export class FaceRecognitionCameraComponent
+  implements OnInit, OnDestroy, AfterViewChecked
+{
   @Input() cameraParams: any = {};
   @Output() deleteCameraEvent = new EventEmitter<any>();
 
+  @ViewChild('videoElement') videoElement!: ElementRef;
+  videoDevices: MediaDeviceInfo[] = [];
+  selectedDeviceId: string = '';
+  stream: MediaStream | null = null;
+  isVideoPlaying: boolean = false;
+
+  @ViewChild('canvasBanner') canvasBanner!: ElementRef;
+  showBanner: boolean = false;
+  bannerHideAnim: boolean = false;
+  cameraHideAnim: boolean = false;
+  detectionColorStyle: string = '';
+
+  haveDetection: boolean = false;
+  rgbaImageData: Array<Array<number>> = [];
+  bannerText: string = '';
+
   controles: boolean = false;
 
-  constructor(public faceRecognitionService: FaceRecognitionService) { }
+  constructor(
+    public faceRecognitionService: FaceRecognitionService,
+    private userService: UserService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.getMediaDevices();
-    navigator.mediaDevices.addEventListener('devicechange', () => this.updateMediaDevices());
+    navigator.mediaDevices.addEventListener('devicechange', () =>
+      this.updateMediaDevices()
+    );
   }
 
   ngOnDestroy(): void {
     this.stopStream();
     this.faceRecognitionService.stopFaceRecognitionService();
-    navigator.mediaDevices.removeEventListener('devicechange', () => this.updateMediaDevices());
+    navigator.mediaDevices.removeEventListener('devicechange', () =>
+      this.updateMediaDevices()
+    );
   }
 
   ngAfterViewChecked(): void {
-    if (this.canvasBanner && this.showBanner) {
+    if (this.canvasBanner) {
       try {
-        this.faceRecognitionService.imageDataToCanvas(this.rgbaImageData, this.canvasBanner.nativeElement);
-      }
-      catch (error) {
+        this.faceRecognitionService.imageDataToCanvas(
+          this.rgbaImageData,
+          this.canvasBanner.nativeElement
+        );
+      } catch (error) {
         console.log(error);
       }
     }
@@ -64,26 +96,33 @@ export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterV
 
   playListener() {
     this.isVideoPlaying = true;
-    this.faceRecognitionService.startFaceRecognitionService(() => this.detectionListener(), this.videoElement);
+    //this.faceRecognitionService.startFaceRecognitionService(() => this.detectionListener(), this.videoElement);
   }
 
   onStartStopService(event: any) {
     if (event.target.checked) {
-      this.faceRecognitionService.startFaceRecognitionService(() => this.detectionListener(), this.videoElement);
-    }
-    else {
+      this.faceRecognitionService.startFaceRecognitionService(
+        () => this.detectionListener(),
+        this.videoElement
+      );
+    } else {
       this.faceRecognitionService.stopFaceRecognitionService();
     }
   }
 
   isWaiting(): boolean {
-    return !this.isVideoPlaying || this.faceRecognitionService.isFaceRecognitionServiceStarted() && !this.faceRecognitionService.isRecognitionLoaded || this.haveDetection ? true : false;
+    return !this.isVideoPlaying ||
+      (this.faceRecognitionService.isFaceRecognitionServiceStarted() &&
+        !this.faceRecognitionService.isRecognitionLoaded) ||
+      this.haveDetection
+      ? true
+      : false;
   }
 
   deleteCamera() {
-    this.hideCamera = true;
+    this.cameraHideAnim = true;
     setTimeout(() => {
-      this.hideCamera = false;
+      this.cameraHideAnim = false;
       this.deleteCameraEvent.emit(this.cameraParams);
     }, 1000);
   }
@@ -91,54 +130,88 @@ export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterV
   detectionListener(): void {
     if (!this.haveDetection) {
       this.haveDetection = true;
-
-      this.rgbaImageData = this.faceRecognitionService.rgbaImageData;
-      console.log(this.rgbaImageData);
-      
       this.faceRecognitionService.stopAutoDetectFace();
 
-      //Aqui se envia la imagen a BE y se espera la respuesta
-      setTimeout(() => { //Simulacion de espera
+      console.log(
+        'Photo detected: ',
+        this.faceRecognitionService.rgbaImageData
+      );
 
-        this.showBanner = true;
-        this.setDetectionColor(this.detectionOk ? 'ok' : 'fail'); //Se encontro la conicidencia en BE
+      const userLogTimePayload = {
+        action: this.cameraParams.type,
+        area_id: 1,
+        photo: this.faceRecognitionService.rgbaImageData,
+      } as UserLogTimePayloadModel;
 
-        console.log('Timeout detection running');
-        setTimeout(() => {
-          this.showBanner = false;
-          this.hideBanner = true;
-          setTimeout(() => {
-            this.hideBanner = false;
-            this.setDetectionColor();
-            this.faceRecognitionService.startAutoDetectFace(this.videoElement);
+      console.log('PayLoad: ', userLogTimePayload);
+
+      this.userService
+        .logTime(userLogTimePayload)
+        .pipe(take(1))
+        .subscribe({
+          next: (response) => {
+            console.log('Find user: ', response);
+
+            if (response.body?.role_id !== 5) {
+              this.bannerText = `${response.body?.name} - ${response.body?.codes[0].code}`;
+              this.setDetectionColorStyle('ok');
+            } else {
+              this.bannerText = `Usuario desconocido`;
+              this.setDetectionColorStyle('fail');
+            }
+
+            this.rgbaImageData = this.faceRecognitionService.rgbaImageData;
+            this.showBanner = true;
+
+            setTimeout(() => {
+              this.bannerHideAnim = true;
+
+              setTimeout(() => {
+                this.showBanner = false;
+                this.bannerHideAnim = false;
+                this.rgbaImageData = [];
+                this.setDetectionColorStyle();
+                this.haveDetection = false;
+                this.faceRecognitionService.startAutoDetectFace(
+                  this.videoElement
+                );
+              }, 500); //tiempo para completar la animacion cuando desaparece el banner
+            }, 4500); //tiempo que permanece el banner
+          },
+          error: (error) => {
+            console.error('Error en la solicitud POST: ', error);
             this.haveDetection = false;
-            console.log('Timeout detection finished');
-          }, 500);
-        }, 7500);
-
-      }, 1500);
+            this.faceRecognitionService.startAutoDetectFace(this.videoElement);
+          },
+        });
     }
   }
 
-  setDetectionColor(status: string = '') {
-    this.detectionColor = status ? `color-${status}` : status;
+  setDetectionColorStyle(status: string = '') {
+    this.detectionColorStyle = status ? `color-${status}` : status;
   }
 
   async getMediaDevices(): Promise<void> {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      this.videoDevices = devices.filter((device) => device.kind === 'videoinput');
+      this.videoDevices = devices.filter(
+        (device) => device.kind === 'videoinput'
+      );
 
       console.log('Camaras: ' + this.videoDevices.length);
       console.log(this.videoDevices);
 
       if (this.videoDevices.length > 0) {
-        if (this.selectedDeviceId === '' || !this.videoDevices.find((device) => device.deviceId === this.selectedDeviceId)) {
+        if (
+          this.selectedDeviceId === '' ||
+          !this.videoDevices.find(
+            (device) => device.deviceId === this.selectedDeviceId
+          )
+        ) {
           this.selectedDeviceId = this.videoDevices[0].deviceId;
           await this.startStream();
         }
-      }
-      else {
+      } else {
         this.selectedDeviceId = '';
         this.stream = null;
       }
@@ -148,11 +221,11 @@ export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterV
   }
 
   async updateMediaDevices(): Promise<void> {
-    console.log('Change')
+    console.log('Change');
     await this.getMediaDevices();
   }
 
-  async onSelect (event: Event): Promise<void> {
+  async onSelect(event: Event): Promise<void> {
     const target = event.target as HTMLSelectElement;
     this.selectedDeviceId = target.value;
     console.log('Selected device ID:', this.selectedDeviceId);
@@ -166,10 +239,11 @@ export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterV
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          deviceId: {ideal: this.selectedDeviceId},
-          width: {ideal: 1920},
-          height: {ideal: 1440}
-        }
+          deviceId: { ideal: this.selectedDeviceId },
+          width: { max: 1920 },
+          height: { max: 1440 },
+          frameRate: { max: 60 },
+        },
       });
       const videoElement = this.videoElement.nativeElement;
       if (videoElement) {
@@ -189,29 +263,16 @@ export class FaceRecognitionCameraComponent implements OnInit, OnDestroy, AfterV
   }
 
   /** Para pruebas */
-  async detectarRostro() {
-    //await this.faceRecognitionService.detectFace(this.videoElement);
-  }
-
-  async identificarManual() {
-    this.hideBanner = false;
-    this.haveDetection = !this.haveDetection;
+  mostrarBanner() {
+    this.showBanner = true;
+    this.bannerHideAnim = false;
+    this.setDetectionColorStyle('ok');
   }
 
   ocultarBanner() {
     this.showBanner = false;
-    this.hideBanner = true;
-    this.setDetectionColor();
-  }
-
-  mostrarBanner() {
-    this.showBanner = true;
-    this.hideBanner = false;
-    this.setDetectionColor(this.detectionOk ? 'ok' : 'fail');
-  }
-
-  deteccionOkFail() {
-    this.detectionOk = !this.detectionOk;
+    this.bannerHideAnim = true;
+    this.setDetectionColorStyle();
   }
 
   mostrarControles() {

@@ -1,0 +1,168 @@
+<form class="container" [formGroup]="formGroup" (ngSubmit)="save()">
+  <div class="header-container">
+    <i class="pi pi-user-plus"></i>
+    <div>Nuevo usuario</div>
+  </div>
+
+  <div class="sub-container">
+    <div class="input-container">
+      <p-floatLabel *ngIf="!isLoading()">
+        <p-dropdown
+          [options]="areasOptions"
+          formControlName="area"
+          optionLabel="name"
+          [disabled]="isAreaOptionsEmpty()"
+        />
+        <label for="area">{{
+          !isAreaOptionsEmpty() ? "Área" : "No quedan más áreas"
+        }}</label>
+      </p-floatLabel>
+      <p-skeleton *ngIf="isLoading()" height="2.5rem" />
+    </div>
+
+    <div class="button-container" *ngIf="!isAreaOptionsEmpty()">
+      <p-button
+        label="Agregar área"
+        icon="pi pi-plus"
+        (onClick)="addArea()"
+        [disabled]="isLoading() || !formGroup.controls.area.getRawValue()"
+      />
+    </div>
+  </div>
+
+  <div class="sub-container-selections">
+    <p-button
+      *ngIf="formGroup.controls.area.getRawValue()"
+      [label]="formGroup.controls.area.getRawValue()?.name"
+      icon="pi pi-times"
+      (onClick)="resetArea()"
+      [disabled]="isLoading()"
+    />
+    <p-divider
+      *ngIf="
+        formGroup.controls.area.getRawValue() &&
+        formGroup.controls.areas.getRawValue()!.length > 0
+      "
+      layout="vertical"
+    />
+    <p-button
+      *ngFor="let area of formGroup.controls.areas.getRawValue(); let i = index"
+      [label]="area.name"
+      icon="pi pi-times"
+      severity="secondary"
+      (onClick)="removeArea(i)"
+      [disabled]="isLoading()"
+    />
+  </div>
+
+  <div class="sub-container">
+    <div class="input-container">
+      <p-floatLabel *ngIf="!isLoading()">
+        <input pInputText type="text" formControlName="name" />
+        <label for="name">Nombre</label>
+      </p-floatLabel>
+      <p-skeleton *ngIf="isLoading()" height="2.5rem" />
+    </div>
+
+    <div class="input-container">
+      <p-floatLabel *ngIf="!isLoading()">
+        <input pInputText type="email" formControlName="email" />
+        <label for="email">Correo</label>
+      </p-floatLabel>
+      <p-skeleton *ngIf="isLoading()" height="2.5rem" />
+    </div>
+  </div>
+
+  <div class="sub-container">
+    <div class="input-container">
+      <p-floatLabel *ngIf="!isLoading()">
+        <p-inputNumber
+          [useGrouping]="false"
+          formControlName="code"
+          [maxlength]="10"
+        />
+        <label for="code">Código</label>
+      </p-floatLabel>
+      <p-skeleton *ngIf="isLoading()" height="2.5rem" />
+    </div>
+
+    <div class="input-container">
+      <p-floatLabel *ngIf="!isLoading()">
+        <p-dropdown
+          [options]="categories"
+          formControlName="category"
+          optionLabel="name"
+        />
+        <label for="category">Categoría</label>
+      </p-floatLabel>
+      <p-skeleton *ngIf="isLoading()" height="2.5rem" />
+    </div>
+
+    <div class="button-container">
+      <p-button
+        label="Agregar código"
+        icon="pi pi-plus"
+        severity="primary"
+        (onClick)="addCode()"
+        [disabled]="
+          isLoading() || isCodeOrCategoryNull() || !isCodeCategoryValid()
+        "
+      />
+    </div>
+  </div>
+
+  <div class="sub-container-selections">
+    <p-button
+      *ngIf="isCodeOrCategoryNotNull()"
+      [label]="getCodeLabel()"
+      [icon]="
+        isExtraCode() && !isCodeCategoryValid()
+          ? 'pi pi-exclamation-triangle'
+          : 'pi pi-times'
+      "
+      (onClick)="resetCodeCategory()"
+      [disabled]="isLoading()"
+      [severity]="
+        isExtraCode() && !isCodeCategoryValid() ? 'warning' : 'primary'
+      "
+    />
+    <p-divider
+      *ngIf="isExtraCode() && isCodeOrCategoryNotNull()"
+      layout="vertical"
+    />
+    <p-button
+      *ngFor="let code of formGroup.getRawValue().codes; let i = index"
+      [label]="getCodeLabel(code)"
+      icon="pi pi-times"
+      severity="secondary"
+      (onClick)="removeCode(i)"
+      [disabled]="isLoading()"
+    />
+  </div>
+
+  <div class="footer-container">
+    <div class="button-container">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-arrow-left"
+        (onClick)="cancel()"
+        severity="secondary"
+      />
+    </div>
+
+    <div class="button-container">
+      <p-button
+        [label]="saveButtonText"
+        icon="pi pi-check"
+        type="submit"
+        severity="success"
+        [loading]="saving"
+        [disabled]="
+          loading ||
+          formGroup.invalid ||
+          (isExtraCode() && !isCodeCategoryValid(true))
+        "
+      ></p-button>
+    </div>
+  </div>
+</form>

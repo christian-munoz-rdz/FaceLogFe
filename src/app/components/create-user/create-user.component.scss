@@ -1,0 +1,92 @@
+.container {
+    background-color: var(--color-camera);
+    border-radius: var(--border-radius-l);
+    box-shadow: 0px 0px 20px var(--color-camera);
+    padding: 30px;
+    //width: 848px;
+}
+
+.header-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 30px;
+    color: var(--font-color);
+    font-size: 35px;
+    font-weight: bold;
+    //text-shadow: 0px 1px 1px #fff, 0px -1px 1px #000;
+}
+
+.header-container i {
+    margin: 10px;
+    margin-right: 20px;
+    font-size: 40px;
+}
+
+.sub-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0px;
+}
+
+.footer-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-container {
+    flex: 1;
+    width: 100%;
+    min-width: 260px;
+    margin: 15px;
+}
+
+.button-container {
+    //flex-shrink: 0;
+    margin: 10px;
+}
+
+.sub-container-selections {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    max-width: 700px;
+    margin: 0px auto;
+    padding-bottom: 15px;
+}
+
+:host::ng-deep .sub-container-selections .p-button {
+    margin: 10px;
+    margin-top: 0px;
+    padding: 5px 10px;
+    border-radius: var(--border-radius-sm);
+}
+
+:host::ng-deep .sub-container-selections .p-divider {
+    margin: 0px 5px;
+    margin-bottom: 10px;
+    padding: 4px 0px;
+}
+
+:host::ng-deep .p-inputtext,
+:host::ng-deep p-inputnumber,
+:host::ng-deep .p-inputnumber,
+:host::ng-deep p-dropdown .p-dropdown {
+    width: 100%;
+}
+
+p-floatLabel input:focus ~ label,
+p-floatLabel input.p-filled ~ label,
+p-floatLabel .p-inputwrapper-focus ~ label,
+p-floatLabel .p-inputwrapper-filled ~ label {
+    color: var(--font-color);
+    font-size: 14px;
+}
+
+p-floatLabel .ng-dirty.ng-invalid ~ label {
+    color: #e24c4c;
+}
